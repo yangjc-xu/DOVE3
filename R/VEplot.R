@@ -1,9 +1,7 @@
-#' @importFrom tidyverse
-#'
 #' @export
 VEplot <- function(vaccine, infection_ind) {
   n_type = length(vaccine)
-  result = NULL
+  plot_result = NULL
   for (i in 1:n_type) {
     xlabel = ifelse(i < infection_ind, "Months since vaccination", "Months since infection")
     tmp_dat = as.data.frame(vaccine[[i]])
@@ -17,7 +15,7 @@ VEplot <- function(vaccine, infection_ind) {
       theme(legend.key = element_rect(colour = NA, fill = NA),
             legend.background = element_blank(),
             aspect.ratio=1/1.5)
-    result[[i]] = tmp_plot
+    plot_result[[i]] = tmp_plot
   }
-  return(result)
+  return(plot_result)
 }
