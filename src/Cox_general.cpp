@@ -199,11 +199,11 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
   Rcpp::List ret;
   int tau = max(Time);
   int n_type = knots.size();
-  arma::mat vh(tau, n_type); vh.zeros();
-  arma::mat var_vh(tau, n_type); var_vh.zeros();
-  arma::mat ci_upper(tau, n_type); ci_upper.zeros();
-  arma::mat ci_lower(tau, n_type); ci_lower.zeros();
-  arma::vec time(tau); time.zeros();
+  arma::mat vh(tau + 1, n_type); vh.zeros();
+  arma::mat var_vh(tau + 1, n_type); var_vh.zeros();
+  arma::mat ci_upper(tau + 1, n_type); ci_upper.zeros();
+  arma::mat ci_lower(tau + 1, n_type); ci_lower.zeros();
+  arma::vec time(tau + 1); time.zeros();
   int p1 = X.n_cols;
   int p2 = arma::sum(dimension);
   int n = X.n_rows;
@@ -290,20 +290,20 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
     int end_k = start_k + dimension(k) - 1;
     arma::vec gamma_k = gamma.subvec(start_k, end_k);
     arma::mat cov_gamma_k = cov_gamma.submat(start_k, start_k, end_k, end_k);
-    for(int l = 1; l <= tau; ++l){
-      time(l-1) = l;
+    for(int l = 0; l <= tau; ++l){
+      time(l) = l;
       arma::rowvec B = (k >= infection_ind-1) ? BS_infection(l, knots_k, constantVE) : BS(l, knots_k, constantVE);
-      vh(l-1,k) = 1 - exp(arma::as_scalar(B * gamma_k));
-      var_vh(l-1,k) = exp(2*arma::as_scalar(B * gamma_k)) * arma::as_scalar(B * cov_gamma_k * B.t());
+      vh(l,k) = 1 - exp(arma::as_scalar(B * gamma_k));
+      var_vh(l,k) = exp(2*arma::as_scalar(B * gamma_k)) * arma::as_scalar(B * cov_gamma_k * B.t());
       double var_logh = arma::as_scalar(B * cov_gamma_k * B.t());
-      ci_upper(l-1,k) = 1 - exp(arma::as_scalar(B * gamma_k) - sqrt(var_logh) * 1.96);
-      ci_lower(l-1,k) = 1 - exp(arma::as_scalar(B * gamma_k) + sqrt(var_logh) * 1.96);
+      ci_upper(l,k) = 1 - exp(arma::as_scalar(B * gamma_k) - sqrt(var_logh) * 1.96);
+      ci_lower(l,k) = 1 - exp(arma::as_scalar(B * gamma_k) + sqrt(var_logh) * 1.96);
     }
   }
 
   ret["beta"] = beta;
   ret["gamma"] = gamma;
-  ret["Covariance"] = cov;
+  ret["Covariance"] = cov.submat(0,0,p1-1,p1-1);
   ret["vh"] = vh;
   ret["var_vh"] = var_vh;
   ret["ci_upper"] = ci_upper;
