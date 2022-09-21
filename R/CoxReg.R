@@ -1,7 +1,7 @@
 #' @export
 CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
                   constantVE = FALSE, interact = FALSE, cutoff = 14){
-  ## data: subject.id, event.time, censor.time, vaccine.time, Vtime, Vtype, infection.time, infection.type, X
+  ## data: subject.id, event.time, censor.time, entry.time, Vtime, Vtype, infection.time, infection.type, X
   ## ResMat: restriction matrix
   ## interact: consider interaction of vaccination and infection or not
   tau = max(data$event.time)
@@ -15,7 +15,7 @@ CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
   Delta = ifelse(data$event.time < data$censor.time, 1, 0)
   t = sort(unique(Time[which(Delta==1)]), decreasing = T)
   C = data_unique$censor.time
-  VacTime = data_unique$vaccine.time
+  VacTime = data_unique$entry.time
   FirstInfTime = data_unique$infection.time
   S = NULL
   V = NULL

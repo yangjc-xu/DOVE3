@@ -107,7 +107,7 @@ struct CoxPHInformation get_Info(arma::vec beta, arma::vec gamma, arma::vec d,
   arma::vec BetaX = X * beta;
   arma::vec GammaZ = Z * gamma;
 
-  // This k loop is for time points. K = 470.
+  // This k loop is for time points.
   arma::vec S0(K);S0.zeros();
   arma::mat S1(p1+p2,K); S1.zeros();
   arma::cube S2(p1+p2,p1+p2,K); S2.zeros();
@@ -127,7 +127,7 @@ struct CoxPHInformation get_Info(arma::vec beta, arma::vec gamma, arma::vec d,
       arma::rowvec Zk = BS2(tk, V_index_j, S_index_j, FirstInf_index_j, knots, dimension, constantVE, infection_ind, interact_ind, interact);
       arma::rowvec XZk = join_horiz(X.row(index(j)), Zk);
       double temp = exp(BetaX(index(j)) + arma::as_scalar(Zk*gamma));
-      // remove subjects who get infections with 30 days out of risk set
+      // remove subjects who get infections with *cutoff* days out of risk set
       arma::uvec index_inf = arma::find(V_index_j >= infection_ind);
       if(index_inf.n_elem > 0){
         for(int q = 0; q < index_inf.n_elem; ++q){
