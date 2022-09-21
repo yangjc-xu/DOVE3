@@ -18,7 +18,7 @@ arma::rowvec BS(double t, arma::vec knots, bool constantVE){
     npc = knots.n_elem;
     temp = t>knots(npc-1) ? t-knots(npc-1) : 0;
   } else {
-    npc = knots.n_elem+1;
+    npc = knots.n_elem + 1;
     temp = 0;
   }
 
@@ -91,29 +91,17 @@ arma::rowvec BS2(double Time, arma::vec V, arma::vec S, double FirstInf,
 
 struct CoxPHInformation get_Info(arma::vec beta, arma::vec gamma, arma::vec d,
                                  arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C, arma::field<arma::vec> V,
-                                 arma::field<arma::vec> S, arma::mat X, arma::vec m, arma::mat Xg, arma::vec ng,
+                                 arma::field<arma::vec> S, arma::mat X, arma::vec m,
                                  arma::vec VacTime, arma::vec FirstInfTime, arma::vec dimension, int infection_ind, int interact_ind,
                                  arma::mat Z, arma::vec Score_constant, arma::field<arma::vec> knots,
-                                 bool constantVE, bool conditional, bool interact, double cutoff){
+                                 bool constantVE, bool interact, double cutoff){
   struct CoxPHInformation res;
   int p1 = beta.n_elem;
   int p2 = gamma.n_elem;
   int K = t.n_elem;
-  int G = ng.n_elem;
   double LogLikelihood = 0;
   arma::vec Score(p1+p2); Score.zeros();
   arma::mat InfoMat(p1+p2,p1+p2); InfoMat.zeros();
-  double temp_g0 = 0;
-  arma::vec temp_g1(p1); temp_g1.zeros();
-  arma::mat temp_g2(p1,p1); temp_g2.zeros();
-
-  // compute temp_g0,1,2
-  arma::vec BetaXg = Xg * beta;
-  for(int g = 0; g < G; ++g){
-    temp_g0 += ng(g) * exp(BetaXg(g));
-    temp_g1 += ng(g) * exp(BetaXg(g)) * Xg.row(g).t();
-    temp_g2 += ng(g) * exp(BetaXg(g)) * Xg.row(g).t() * Xg.row(g);
-  }
 
   // compute Xbeta and Zgamma
   arma::vec BetaX = X * beta;
@@ -148,7 +136,7 @@ struct CoxPHInformation get_Info(arma::vec beta, arma::vec gamma, arma::vec d,
           }
         }
       }
-      if(conditional & (tk <= VacTime(index(j)))){
+      if(tk <= VacTime(index(j))){
         temp = 0;
       }
       temp0 += temp;
@@ -156,9 +144,6 @@ struct CoxPHInformation get_Info(arma::vec beta, arma::vec gamma, arma::vec d,
       temp2 += temp * XZk.t() * XZk;
     }
 
-    temp0 += temp_g0;
-    temp1.subvec(0,p1-1) = temp1.subvec(0,p1-1) + temp_g1;
-    temp2.submat(0,0,p1-1,p1-1) = temp2.submat(0,0,p1-1,p1-1) + temp_g2;
     S0(k) = temp0;
     S1.col(k) = temp1;
     S2.slice(k) = temp2;
@@ -183,10 +168,10 @@ struct CoxPHInformation get_Info(arma::vec beta, arma::vec gamma, arma::vec d,
 
 // [[Rcpp::export]]
 Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C, arma::field<arma::vec> V,
-                       arma::field<arma::vec> S, arma::mat X, arma::vec m, arma::mat Xg, arma::vec ng,
+                       arma::field<arma::vec> S, arma::mat X, arma::vec m,
                        arma::vec VacTime, arma::vec FirstInfTime, arma::vec dimension, int infection_ind, int interact_ind,
                        arma::field<arma::vec> knots, arma::mat ResMat, double eps, int MaxIter,
-                       bool constantVE, bool conditional, bool interact, double cutoff){
+                       bool constantVE, bool interact, double cutoff){
   Rcpp::List ret;
   int tau = max(Time);
   int n_type = knots.size();
@@ -251,17 +236,17 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
   }
 
   temp_old = get_Info(theta_old.head(p1), theta_old.tail(p2), d,
-                      Time, t, Delta, C, V, S, X, m, Xg, ng,
+                      Time, t, Delta, C, V, S, X, m,
                       VacTime, FirstInfTime, dimension, infection_ind, interact_ind,
-                      Z, Score_constant, knots, constantVE, conditional, interact, cutoff);
+                      Z, Score_constant, knots, constantVE, interact, cutoff);
   while(error > eps && Iter < MaxIter){
     theta = theta_old + ResMat.t() * arma::solve(ResMat * temp_old.InformationMat * ResMat.t(), ResMat * temp_old.ScoreFun);
     std::cout << "beta = " << theta.head(p1).t() << std::endl;
     std::cout << "gamma = " << theta.tail(p2).t() << std::endl;
     temp_new = get_Info(theta.head(p1), theta.tail(p2), d,
-                        Time, t, Delta, C, V, S, X, m, Xg, ng,
+                        Time, t, Delta, C, V, S, X, m,
                         VacTime, FirstInfTime, dimension, infection_ind, interact_ind,
-                        Z, Score_constant, knots, constantVE, conditional, interact, cutoff);
+                        Z, Score_constant, knots, constantVE, interact, cutoff);
     error = arma::abs(theta.head(p1)-theta_old.head(p1)).max() + arma::abs(theta.tail(p2)-theta_old.tail(p2)).max();
     theta_old = theta;
     temp_old = temp_new;

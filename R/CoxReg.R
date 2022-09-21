@@ -1,11 +1,8 @@
 #' @export
-CoxReg = function(data, knots, Xg = NULL, ng = NULL,
-                  ResMat, eps = 1e-4, MaxIter = 15,
-                  constantVE = FALSE, conditional = TRUE,
-                  interact = FALSE, cutoff = 14){
+CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
+                  constantVE = FALSE, interact = FALSE, cutoff = 14){
   ## data: subject.id, event.time, censor.time, vaccine.time, Vtime, Vtype, infection.time, infection.type, X
   ## ResMat: restriction matrix
-  ## conditional: conditional on primary series or not
   ## interact: consider interaction of vaccination and infection or not
   tau = max(data$event.time)
   n = length(unique(data$subject.id))
@@ -23,16 +20,10 @@ CoxReg = function(data, knots, Xg = NULL, ng = NULL,
   S = NULL
   V = NULL
   n_cohort = max(data$Vtype)
-  n_inf = max(data$infection.type)
   interact_ind = 0
   infection_ind = 0
   S_vac = as.list(data_unique$Vtime)
   V_vac = as.list(data_unique$Vtype)
-
-  if(conditional){
-    Xg = matrix(0, nrow = 1, ncol = dim(X)[2])
-    ng = 0
-  }
 
   if(interact){
     S_vac = computeList(S_vac, S_vac, (1:n)-1)
@@ -71,9 +62,9 @@ CoxReg = function(data, knots, Xg = NULL, ng = NULL,
   }
 
   result = Cox_general(Time, t, Delta, C, V,
-                       S, X, m, Xg, ng, VacTime, FirstInfTime,
+                       S, X, m, VacTime, FirstInfTime,
                        dimension, infection_ind, interact_ind,
                        knots, ResMat, eps, MaxIter,
-                       constantVE, conditional, interact, cutoff)
+                       constantVE, interact, cutoff)
   return(result)
 }
