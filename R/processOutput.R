@@ -38,8 +38,8 @@ processOutput = function(result, coef_name, cutoff, infection_ind){
     VE[[i]] = tmp_mat
   }
 
-  res = NULL
-  res[["covariates"]] = covariates
-  res[["vaccine"]] = VE
-  return(res)
+  output = NULL
+  output[["covariates"]] = covariates
+  output[["vaccine"]] = VE
+  return(output)
 }
