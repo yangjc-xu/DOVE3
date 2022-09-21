@@ -4,6 +4,9 @@ CoxReg = function(data, knots, Xg = NULL, ng = NULL,
                   constantVE = FALSE, conditional = TRUE,
                   interact = FALSE, cutoff = 14){
   ## data: subject.id, event.time, censor.time, vaccine.time, Vtime, Vtype, infection.time, infection.type, X
+  ## ResMat: restriction matrix
+  ## conditional: conditional on primary series or not
+  ## interact: consider interaction of vaccination and infection or not
   tau = max(data$event.time)
   n = length(unique(data$subject.id))
   m = as.vector(table(data$subject.id))
