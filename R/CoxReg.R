@@ -60,6 +60,7 @@ CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
   if(constantVE){
     dimension = dimension - 1
   }
+  dimension[infection_ind:length(dimension)] = dimension[infection_ind:length(dimension)] + 1
 
   result = Cox_general(Time, t, Delta, C, V,
                        S, X, m, VacTime, FirstInfTime,

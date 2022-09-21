@@ -31,7 +31,7 @@ arma::rowvec BS(double t, arma::vec knots, bool constantVE){
   return B;
 }
 
-arma::rowvec BS_infection(double t, arma::vec knots, bool constantVE){
+arma::rowvec BS_infection_constant(double t, arma::vec knots, bool constantVE){
   int npc;
   double temp;
   arma::rowvec B;
@@ -52,6 +52,30 @@ arma::rowvec BS_infection(double t, arma::vec knots, bool constantVE){
   //B = B*0.0329;
   return B;
 }
+
+arma::rowvec BS_infection(double t, arma::vec knots, bool constantVE){
+  int npc;
+  double temp;
+  arma::rowvec B;
+
+  if (constantVE) {
+    npc = knots.n_elem + 1;
+    temp = t>knots(npc-1) ? t-knots(npc-1) : 0;
+  } else {
+    npc = knots.n_elem + 2;
+    temp = 0;
+  }
+
+  B.set_size(npc);
+  B(0) = 1;
+  B(1) = t-temp;
+  for (int i = 2; i < npc; ++i) {
+    B(i) = (t>knots(i-2) ? t-knots(i-2) : 0)-temp;
+  }
+  //B = B*0.0329;
+  return B;
+}
+
 
 arma::rowvec BS2(double Time, arma::vec V, arma::vec S, double FirstInf,
                  arma::field<arma::vec> knots, arma::vec dimension, bool constantVE,
@@ -179,6 +203,7 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
   arma::mat var_vh(tau, n_type); var_vh.zeros();
   arma::mat ci_upper(tau, n_type); ci_upper.zeros();
   arma::mat ci_lower(tau, n_type); ci_lower.zeros();
+  arma::vec time(tau); time.zeros();
   int p1 = X.n_cols;
   int p2 = arma::sum(dimension);
   int n = X.n_rows;
@@ -266,6 +291,7 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
     arma::vec gamma_k = gamma.subvec(start_k, end_k);
     arma::mat cov_gamma_k = cov_gamma.submat(start_k, start_k, end_k, end_k);
     for(int l = 1; l <= tau; ++l){
+      time(l-1) = l;
       arma::rowvec B = (k >= infection_ind-1) ? BS_infection(l, knots_k, constantVE) : BS(l, knots_k, constantVE);
       vh(l-1,k) = 1 - exp(arma::as_scalar(B * gamma_k));
       var_vh(l-1,k) = exp(2*arma::as_scalar(B * gamma_k)) * arma::as_scalar(B * cov_gamma_k * B.t());
@@ -282,6 +308,7 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
   ret["var_vh"] = var_vh;
   ret["ci_upper"] = ci_upper;
   ret["ci_lower"] = ci_lower;
+  ret["time"] = time;
 
   return ret;
 }
