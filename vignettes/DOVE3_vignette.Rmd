@@ -1,0 +1,22 @@
+---
+title: "**iDOVE -- $\\text{\\underline{D}}$urability $\\text{\\underline{O}}$f $\\text{\\underline{V}}$accine $\\text{\\underline{E}}$fficacy 3"
+author: "Yu Gu, Yangjianchen Xu, and Dan-Yu Lin"
+date: September 21, 2022
+output: rmarkdown::pdf_document
+vignette: >
+  %\VignetteIndexEntry{DOVE3-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+opt <- options()
+options(continue="  ", width=70, prompt=" ")
+on.exit(options(opt))
+library(DOVE3, quietly=TRUE)
+```
+
+
+
+
