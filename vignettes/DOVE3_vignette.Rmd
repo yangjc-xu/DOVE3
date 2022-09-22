@@ -30,8 +30,7 @@ vaccination or infection.
   
 \item \textbf{Vaccination time}: The time when vaccination takes place.
   
-\item \textbf{Covariates}: Baseline covariates (e.g., priority group, age, sex, 
-ethnicity).
+\item \textbf{Covariates}: Baseline covariates (e.g., priority group, age, gender).
 \end{itemize}
 
 \noindent Of note, an arbitrary number of baseline covariates can be included,
