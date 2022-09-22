@@ -26,7 +26,7 @@ vaccination or infection.
 \textbf{DOVE3} inputs a rectangular data set with the following information:
 
 \begin{itemize}
-\item \textbf{Entry time}: The time when the participant enters the trial.
+\item \textbf{Entry time}: The time when the participant enters the trial. 
   
 \item \textbf{Vaccination time}: The time when vaccination takes place.
   
