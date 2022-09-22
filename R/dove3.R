@@ -198,7 +198,8 @@ dove3 <- function(formula,
                 MaxIter = 500,
                 constantVE = last_piece_constant,
                 interact = vaccine_infection_interaction,
-                cutoff = reinfection_cutoff)
+                cutoff = reinfection_cutoff,
+                plots = plots)
 
   return( res )
 }
