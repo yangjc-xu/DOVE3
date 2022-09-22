@@ -1,6 +1,6 @@
 #' @export
 CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
-                  constantVE = FALSE, interact = FALSE, cutoff = 14){
+                  constantVE = FALSE, interact = FALSE, cutoff = 14, plots = TRUE){
   ## data: subject.id, event.time, censor.time, entry.time, Vtime, Vtype, infection.time, infection.type, X
   ## ResMat: restriction matrix
   ## interact: consider interaction of vaccination and infection or not
@@ -10,6 +10,7 @@ CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
   MaxReccur = max(m)
   index_dup = which(duplicated(data$subject.id))
   data_unique = data[-index_dup,]
+  coef_name = colnames(data_unique[,9:ncol(data)])
   X = model.matrix(~., data_unique[,9:ncol(data)])[,-1]
   # standardize covariates X
   SD = apply(X = X, MARGIN = 2L, FUN = sd, na.rm = TRUE)
@@ -75,5 +76,11 @@ CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
     result$Covariance[,k] = result$Covariance[,k] / SD[k]
     result$Covariance[k,] = result$Covariance[k,] / SD[k]
   }
-  return(result)
+
+  result_processed = processOutput(result = result,
+                                   coef_name = coef_name,
+                                   cutoff = cutoff,
+                                   infection_ind = infection_ind,
+                                   plots = plots)
+  return(result_processed)
 }

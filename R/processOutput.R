@@ -1,5 +1,5 @@
 #' @export
-processOutput = function(result, coef_name, cutoff, infection_ind){
+processOutput = function(result, coef_name, cutoff, infection_ind, plots){
   time = result$time
   vh = result$vh
   se = sqrt(result$var_vh)
@@ -38,8 +38,15 @@ processOutput = function(result, coef_name, cutoff, infection_ind){
     VE[[i]] = tmp_mat
   }
 
+  ## plots
+  plot_res = NULL
+  if(plots){
+    plot_res = VEplot(vaccine = VE, infection_ind = infection_ind)
+  }
+
   output = NULL
   output[["covariates"]] = covariates
   output[["vaccine"]] = VE
+  output[["plots"]] = plot_res
   return(output)
 }

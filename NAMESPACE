@@ -2,4 +2,7 @@
 
 export(CoxReg)
 export(VEplot)
+export(dove3)
 export(processOutput)
+import(Rcpp)
+import(tidyverse)
