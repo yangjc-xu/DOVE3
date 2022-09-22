@@ -13,6 +13,8 @@ Description: Implements maximum likelihood methods for assessing
   placebo volunteers to the vaccine arm.
 License: GPL-2
 Encoding: UTF-8
+Suggests: rmarkdown, knitr
+VignetteBuilder: utils, knitr
 RoxygenNote: 7.2.1
 Imports: Rcpp (>= 0.11.0), RcppArmadillo, tidyverse
 LinkingTo: Rcpp, RcppArmadillo
