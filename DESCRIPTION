@@ -1,10 +1,16 @@
 Package: DOVE3
-Title: What the Package Does (One Line, Title Case)
+Title: Durability of Vaccine Efficacy 3
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Authors@R: c(person("Danyu", "Lin", role = "aut"),
+             person("Yu", "Gu", role = "aut"),
+             person("Yangjianchen", "Xu", role = c("aut", "cre"),
+             email = "yangjc@live.unc.edu"),
+             person("Donglin", "Zeng", role = "aut"))
+Description: Implements maximum likelihood methods for assessing 
+  potentially time-varying effectiveness of vaccination and prior
+  infection against SARS-CoV-2 infection under staggered enrollment 
+  and time-varying community transmission, allowing crossover of 
+  placebo volunteers to the vaccine arm.
 License: GPL-2
 Encoding: UTF-8
 RoxygenNote: 7.2.1
