@@ -10,8 +10,8 @@ CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
   MaxReccur = max(m)
   index_dup = which(duplicated(data$subject.id))
   data_unique = data[-index_dup,]
-  coef_name = colnames(data_unique[,9:ncol(data)])
   X = model.matrix(~., data_unique[,9:ncol(data)])[,-1]
+  coef_name = colnames(X)
   # standardize covariates X
   SD = apply(X = X, MARGIN = 2L, FUN = sd, na.rm = TRUE)
   X = scale(x = X, center = FALSE, scale = SD)
