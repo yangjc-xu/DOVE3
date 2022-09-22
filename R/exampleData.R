@@ -19,7 +19,7 @@
 #'   \item{infection.time}{The time of infection in days.}
 #'   \item{infection.type}{The type of infection.}
 #'   \item{age}{A categorical variable of age (<18, 18-34, 35-49, 50-64, >=65).}
-#'   \item{gender}{A binary indicator of sex (male/female).}
+#'   \item{gender}{A binary indicator of gender (male/female).}
 #'   \item{priority}{A composite baseline risk score taking values 1-3.}
 #'   }
 #'
