@@ -1,6 +1,5 @@
 ---
-title: "**iDOVE -- $\\text{\\underline{D}}$urability $\\text{\\underline{O}}$f $\\text{\\underline{V}}$accine $\\text{\\underline{E}}$fficacy 3"
-author: "Yu Gu, Yangjianchen Xu, and Dan-Yu Lin"
+title: "**DOVE3 -- $\\text{\\underline{D}}$urability $\\text{\\underline{O}}$f $\\text{\\underline{V}}$accine $\\text{\\underline{E}}$fficacy 3**"
 date: September 21, 2022
 output: rmarkdown::pdf_document
 vignette: >
@@ -14,9 +13,40 @@ knitr::opts_chunk$set(echo = TRUE)
 opt <- options()
 options(continue="  ", width=70, prompt=" ")
 on.exit(options(opt))
-library(DOVE3, quietly=TRUE)
+#library(DOVE3, quietly=TRUE)
 ```
 
+## Introduction
 
+\textbf{DOVE3} is an R package for assessing potentially assessing potentially time-varying effectiveness of 
+vaccination and prior infection against SARS-CoV-2 infection under staggered enrollment of participants and 
+time-varying community transmission, allowing crossover of placebo volunteers to the vaccine arm before the 
+end of the study. 
+\textbf{DOVE3} implements the methodology of Lin et al. (2022) for estimating time-varying VE against such 
+interval-censored events, representing the log hazard ratio for the vaccine effect by a piece-wise linear function of time since vaccination. 
+The special case of right-censored events is implemented by dove2() in the DOVE package. 
 
+\textbf{DOVE3} inputs a rectangular data set with the following information:
+
+\begin{itemize}
+\item \textbf{Entry time}: The time when the participant enters the trial.
+  
+\item \textbf{Vaccination time}: The time when vaccination takes place.
+  
+\item \textbf{Covariates}: Baseline covariates (e.g., priority group, age, sex, 
+ethnicity).
+\end{itemize}
+
+\noindent Of note, an arbitrary number of baseline covariates can be included,
+and all of the time variables are measured from the start of the trial and are 
+specified in units of whole days. 
+
+\vspace{.15in}
+
+The primary analysis tool of the package is \textit{dove3()}, which
+returns the estimated hazard ratio for each baseline covariate, the
+estimated VE in reducing the attack rate (cumulative incidence),
+the estimated VE in reducing the hazard rate (instantaneous risk), and the
+estimated VE in reducing the attack rates over successive time periods.
+The standard errors and 95\% confidence intervals are also provided.
 
