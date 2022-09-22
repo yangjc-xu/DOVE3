@@ -8,9 +8,9 @@ Authors@R: c(person("Danyu", "Lin", role = "aut"),
              person("Donglin", "Zeng", role = "aut"))
 Description: Implements maximum likelihood methods for assessing 
   potentially time-varying effectiveness of vaccination and prior
-  infection against SARS-CoV-2 infection under staggered enrollment 
-  and time-varying community transmission, allowing crossover of 
-  placebo volunteers to the vaccine arm.
+  infection against potentially recurrent SARS-CoV-2 infection 
+  under staggered enrollment and time-varying community transmission, 
+  allowing crossover of placebo volunteers to the vaccine arm.
 License: GPL-2
 Encoding: UTF-8
 Suggests: rmarkdown, knitr
