@@ -1,7 +1,7 @@
 #' Toy Dataset For Illustration
 #'
 #' This data set is provided for the purposes of illustrating the use of
-#' the software. It was a simulated data set that mimics the surveillance data of
+#' the software. It is a simulated data set that mimics the surveillance data of
 #' vaccination and infection.
 #'
 #'
