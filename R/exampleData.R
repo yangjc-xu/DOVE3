@@ -7,7 +7,7 @@
 #'
 #' @usage data(exampleData)
 #'
-#' @format idoveData is a data.frame containing 8,000 records.
+#' @format exampleData is a data.frame containing 8,000 records.
 #'   The data.frame contains 11 columns,
 #'   \describe{
 #'   \item{subject.id}{The subject ID of each record.}
