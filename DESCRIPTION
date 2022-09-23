@@ -18,3 +18,12 @@ VignetteBuilder: utils, knitr
 RoxygenNote: 7.2.1
 Imports: Rcpp (>= 0.11.0), RcppArmadillo, tidyverse
 LinkingTo: Rcpp, RcppArmadillo
+Collate: 
+    'CoxReg.R'
+    'RcppExports.R'
+    'VEplot.R'
+    'outcome.R'
+    'exposure.R'
+    'dove3.R'
+    'exampleData.R'
+    'processOutput.R'
