@@ -180,9 +180,9 @@
 #'
 #' @export
 #' @import methods Rcpp
-#' 
-#' @useDynLib test
-#' 
+#'
+#' @useDynLib DOVE3
+#'
 #' @include CoxReg.R exposure.R outcome.R
 #' @importFrom stats model.response update.formula complete.cases
 #'
