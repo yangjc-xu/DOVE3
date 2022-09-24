@@ -14,7 +14,7 @@ Description: Implements maximum likelihood methods for assessing
 License: GPL-2
 Encoding: UTF-8
 Suggests: rmarkdown, knitr
-VignetteBuilder: utils, knitr
+VignetteBuilder: utils, knitr, rmarkdown
 RoxygenNote: 7.2.1
 Imports: Rcpp (>= 1.0.7), methods, stats, tidyverse, ggplot2
 LinkingTo: Rcpp, RcppArmadillo

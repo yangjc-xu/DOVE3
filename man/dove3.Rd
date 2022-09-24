@@ -78,7 +78,7 @@ If NULL (default), there is no constraint on the piecewise linear functions
 for different vaccine types during the estimation.}
 
 \item{last_piece_constant}{A logical object. If FALSE (default), effectiveness
-is allowed to vary after the last knot. If TRUE, VE is assumed to be
+is allowed to vary after the last knot. If TRUE, effectiveness is assumed to be
 constant after the last knot.}
 
 \item{reinfection_cutoff}{A positive scalar object. Positive results at two time
@@ -109,7 +109,7 @@ An list object with elements
 Estimates the potentially waning long-term effectiveness of vaccination and
  prior infection against COVID-19 outcomes in observational studies.
  Effects of all exposures (i.e., vaccination and prior infection) are estimated
- simutaneously under a single Cox regression model, allowing the outcome
+ simultaneously under a single Cox regression model, allowing the outcome
  of interest to be a recurrent event.
 }
 \details{

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 opt <- options()
 options(continue="  ", width=70, prompt=" ")
 on.exit(options(opt))
-#library(DOVE3, quietly=TRUE)
+library(DOVE3, quietly=TRUE)
 ```
 
 ## Introduction
@@ -79,7 +79,7 @@ the data in a predictable format for use in internal functions.
 
 The usage is
 ```{r eval=FALSE}
-outcome(subject.id, entry.time, event.time, censor.time)
+outcome(subject_id, entry_time, event_time, censor_time)
 ```
 where \texttt{subject.id} is the number that identifies subjects;
 \texttt{entry.time} is the calendar time when the subject enters the risk set;
@@ -102,7 +102,7 @@ the data in a predictable format for use in internal functions.
 
 The usage is
 ```{r eval=FALSE}
-exposure(vaccine.time, vaccine.type, infection.time, infection.type)
+exposure(vaccine_time, vaccine_type, infection_time, infection_type)
 ```
 where \texttt{vaccine.time} is the calendar time when vaccination takes place 
 (NA, Inf, or an arbitrary value greater than the study end time if the subject is not vaccinated during the study period);
@@ -157,7 +157,196 @@ $k$th vaccine type.
 \item \texttt{prior\_infection\_knots} is a list object of which the $k$th element specifies the knots of the piecewise linear function for the log rate/hazard ratio of the $k$th infection type. The first knot should be placed at reinfection\_cutoff.
 \item \texttt{related\_vaccine\_types} is a list object of which the element takes the form c(i,j) and imposes a constraint that the slope of the first piece of the piecewise linear function is the same between the $i$th and $j$th vaccine types.
 \item \texttt{last\_piece\_constant} is a logical object specifying the effectiveness trend after the last change point. If TRUE, effectiveness is assumed to be constant after the last change point; otherwise, effectiveness is allowed to vary after the last change point.
+\item \texttt{reinfection\_cutoff} is a positive scalar object specifying the gap time (in days) that defines distinct infections. If the gap time of two infections is larger than reinfection\_cutoff, they considered as two different infections.
 \item \texttt{plots} is a logical object indicating whether graphical forms of the estimated effectiveness curves are to be generated.
 \end{itemize}
 
+If vaccine\_knots, vaccine\_uninfected\_knots, or vaccine\_infected\_knots = NULL, knots will be placed at every other month by default. The input of vaccine\_knots will be ignored when vaccine\_infection\_interaction = TRUE. The input of vaccine\_uninfected\_knots and vaccine\_infected\_knots will be ignored if vaccine\_infection\_interaction = FALSE. If prior\_infection\_knots = NULL, a default set of knots will be used, with the first knot placed at reinfection\_cutoff and the subsequent knots placed at every three months.
+
 \vspace{.15in}
+
+The model statement is a formula object. The left side is an
+object returned by the \textit{outcome()} function. 
+The right-hand side is a combination of
+baseline covariates and the previously described \textit{exposure()} function.
+Categorical baseline covariates can be specified, and all other categories are compared to the first category.
+
+The \texttt{formula} input takes the following general structure
+
+```{r intCens-usage, eval=FALSE}
+outcome(subject_id, entry_time, event_time, censor_time) ~ covariates +
+    exposure(vaccine_time, vaccine_type, infection_time, infection_type)
+```
+
+where 'subject\_id', 'entry\_time', 'event\_time', 'censor_time', 'covariates', 'vaccine\_time', 
+'vaccine\_type', 'infection\_time', and 'infection\_type'
+are place holders indicating the data that are to be provided; they should be replaced by the 
+appropriate variable names in the header of the input data.
+
+## Examples
+
+To illustrate the call structure and results of \textit{dove3()}, we use the 
+dataset provided with the package, exampleData. 
+This dataset was simulated to mimics the surveillance data of
+vaccination and infection and contains the following observations 
+for each of the 8,000 records:
+
+\begin{itemize}
+\item \textbf{subject.id}: The subject ID of each record.
+\item \textbf{event.time}: The event (infection, hospitalization or death) time in days. Infection is treated as recurrent event.
+\item \textbf{censor.time}: The censoring time for each subject in days.
+\item \textbf{entry.time}: The entry time in days.
+\item \textbf{Vtime}: The time of vaccination/booster in days.
+\item \textbf{Vtype}: The type of vaccination/booster.
+\item \textbf{infection.time}: The time of infection in days. If the outcome is infection, infection.time is the same as event.time.
+\item \textbf{infection.type}: The type of infection.
+\item \textbf{age}: A categorical variable of age (<18, 18-34, 35-49, 50-64, >=65).
+\item \textbf{gender}: A binary indicator of gender (1 for male and 0 for female).
+\item \textbf{priority}: A composite baseline risk score taking values 1-3.
+\end{itemize}
+
+\vspace{.15in}
+
+The data can be loaded in the usual way
+```{r data-load}
+data(exampleData)
+```
+
+```{r data-head}
+head(exampleData)
+```
+
+\vspace{.15in}
+
+Consider the summary statistics
+```{r data-summary}
+summary(exampleData)
+```
+We can see that participants were enrolled in the study over a 5-month period 
+(119 $\le$ entry.time $\le 271$ days), the follow-up time ended on day 272
+(censor.time $\le$ 272 days). In this analysis, we will include in our model statement all three baseline 
+covariates, age, gender and priority.
+
+\vspace{.25in}
+
+In the first example, we estimated the effectiveness of the 3 types of vaccination and the 2 types of the prior infection without interaction between them.
+The knots are placed as follows:
+```{r eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE}
+vaccine.knots = list("vac.type1" = c(30),
+                     "vac.type2" = c(30,60),
+                     "vac.type3" = c(30,60))
+prior.infection.knots = list("inf.type1" = c(14),
+                             "inf.type2" = c(14))
+```
+The function call takes the following form
+```{r}
+formula = outcome(subject.id, entry.time, event.time, censor.time) ~
+  age + gender + priority +
+  exposure(Vtime, Vtype, infection.time, infection.type)
+data = exampleData
+
+result1 = dove3(formula = formula,
+                data = data,
+                vaccine_knots = vaccine.knots,
+                prior_infection_knots = prior.infection.knots)
+```
+
+\vspace{.15in}
+
+The function returns a list object with the following information.
+
+\vspace{.1in}
+
+\noindent \textbf{Covariate Effects}: The estimated (log) hazard/rate ratio of each covariate, 
+together with the estimated standard error, the $95\%$ confidence 
+interval, and the two-sided p-value for testing no covariate effect. 
+
+```{r}
+result1$covariates
+```
+
+\vspace{.15in}
+
+\noindent \textbf{Estimated Effectiveness}: Element \textbf{\$effectiveness} contains the 
+estimated effectiveness for different types of vaccination or prior infection in reducing 
+the attack rate at each observed event time, together 
+with its standard error and the $95\%$ confidence interval. The $i$th element of result1$effectiveness
+corresponds to the $i$th type of vaccination or prior infection.
+      
+```{r}
+head(result1$effectiveness[[1]])
+```
+
+\vspace{.15in}
+
+\noindent \textbf{Plots}: Element \textbf{\$plots} contains the graphical depictions of the estimated effectiveness 
+that generated by default by \textit{dove3()}. The $i$th element of result1$plots
+corresponds to the $i$th type of vaccination or prior infection, which can be regenerated as follows:
+      
+```{r}
+result1$plots[[1]]
+```
+
+\vspace{.15in}
+
+In the second example, we estimated the effectiveness of the 3 types of vaccination and the 2 types of the prior infection with interaction between them.
+In addition, we assumed the first piece of the piecewise linear function is the same between the first and second vaccine types. 
+The knots are placed as follows:
+
+```{r}
+vaccine.uninfected.knots = list("vac.noinf.type1" = c(30),
+                                "vac.noinf.type2" = c(30,60),
+                                "vac.noinf.type3" = c(30,60))
+
+vaccine.infected.knots = list("vac.noinf.type1" = c(30),
+                              "vac.noinf.type2" = c(60),
+                              "vac.noinf.type3" = c(60))
+```
+The function call takes the following form
+```{r}
+result2 = dove3(formula = formula,
+                data = data,
+                vaccine_infection_interaction = TRUE,
+                vaccine_uninfected_knots = vaccine.uninfected.knots,
+                vaccine_infected_knots = vaccine.infected.knots,
+                prior_infection_knots = prior.infection.knots,
+                related_vaccine_types = list(c(1,2)))
+```
+
+\vspace{.15in}
+
+The function returns a list object containing the following items. 
+
+\vspace{.1in}
+
+\noindent \textbf{Covariate Effects}: The estimated (log) hazard/rate ratio of each covariate, 
+together with the estimated standard error, the $95\%$ confidence 
+interval, and the two-sided p-value for testing no covariate effect.
+      
+```{r idove-constantVE-return-covariates}
+result2$covariates
+```
+
+\vspace{.15in}
+ 
+
+\noindent \textbf{Estimated Effectiveness}: Element \textbf{\$effectiveness} contains the 
+estimated constant VE, together 
+with its standard error and the $95\%$ confidence interval. 
+      
+```{r}
+head(result2$effectiveness[[1]])
+```
+
+\vspace{.15in}
+
+\noindent \textbf{Plots}: Element \textbf{\$plots} contains the graphical depictions of the estimated effectiveness:
+      
+```{r}
+result2$plots[[1]]
+```
+
+\noindent \textbf{References}
+
+Lin, D-Y, Gu, Y., Xu, Y., et al. Association of Primary and Booster Vaccination and Prior Infection With SARS-CoV-2 Infection and Severe COVID-19 Outcomes. JAMA. Published online September 26, 2022. doi:10.1001/jama.2022.17876
+

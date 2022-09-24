@@ -146,7 +146,7 @@
 #'   for different vaccine types during the estimation.
 #'
 #' @param last_piece_constant A logical object. If FALSE (default), effectiveness
-#'   is allowed to vary after the last knot. If TRUE, VE is assumed to be
+#'   is allowed to vary after the last knot. If TRUE, effectiveness is assumed to be
 #'   constant after the last knot.
 #'
 #' @param reinfection_cutoff A positive scalar object. Positive results at two time

@@ -16,7 +16,7 @@ exampleData is a data.frame containing 8,000 records.
   \item{infection.time}{The time of infection in days. If the outcome is infection, infection.time is the same as event.time.}
   \item{infection.type}{The type of infection.}
   \item{age}{A categorical variable of age (<18, 18-34, 35-49, 50-64, >=65).}
-  \item{gender}{A binary indicator of gender (male/female).}
+  \item{gender}{A binary indicator of gender (1 for male and 0 for female).}
   \item{priority}{A composite baseline risk score taking values 1-3.}
   }
 }
