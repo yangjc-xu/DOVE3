@@ -180,7 +180,9 @@
 #'
 #' @export
 #' @import methods Rcpp
-#'
+#' 
+#' @useDynLib test
+#' 
 #' @include CoxReg.R exposure.R outcome.R
 #' @importFrom stats model.response update.formula complete.cases
 #'
@@ -195,7 +197,7 @@
 #'                              "inf.type2" = c(14,120))
 #'
 #' # Fit the simple model without interaction or related vaccine types
-#' dove3(formula = outcome(subject.id, entry.time, event.time, censor.time) ~
+#' fit1 <- dove3(formula = outcome(subject.id, entry.time, event.time, censor.time) ~
 #'                 age + gender + priority +
 #'                 exposure(Vtime, Vtype, infection.time, infection.type),
 #'       data = exampleData,
@@ -212,8 +214,8 @@
 #'                                 "vac.noinf.type3" = c(60))
 #'
 #' # Fit the model with interaction between vaccination and prior infection status,
-#' and impose a constraint on the first pieces of the first two vaccine types.
-#' dove3(formula = outcome(subject.id, entry.time, event.time, censor.time) ~
+#' # and impose a constraint on the first pieces of the first two vaccine types.
+#' fit2 <- dove3(formula = outcome(subject.id, entry.time, event.time, censor.time) ~
 #'                 age + gender + priority +
 #'                 exposure(Vtime, Vtype, infection.time, infection.type),
 #'       data = exampleData,
