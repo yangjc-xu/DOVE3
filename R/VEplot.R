@@ -3,7 +3,7 @@ VEplot <- function(vaccine, infection_ind) {
   n_type = length(vaccine)
   plot_result = NULL
   for (i in 1:n_type) {
-    xlabel = ifelse(i < infection_ind, "Months since vaccination", "Months since infection")
+    xlabel = ifelse(i < infection_ind, "Days since vaccination", "Days since infection")
     tmp_dat = as.data.frame(vaccine[[i]])
     xmax = max(tmp_dat$time[which(tmp_dat$VE>=0)],0)
     tmp_plot = ggplot(data = tmp_dat) +
