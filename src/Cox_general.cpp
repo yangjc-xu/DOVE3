@@ -1,8 +1,8 @@
-#include <iostream>
-#include <armadillo>
+#define ARMA_DONT_PRINT_ERRORS
 #include <RcppArmadillo.h>
-using namespace Rcpp;
+
 // [[Rcpp::depends(RcppArmadillo)]]
+using namespace Rcpp;
 struct CoxPHInformation{
   double LogLikelihood;
   arma::vec ScoreFun;

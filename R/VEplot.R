@@ -1,5 +1,5 @@
 #' @export
-#' @import tidyverse
+#' @import tidyverse ggplot2
 VEplot <- function(vaccine, infection_ind) {
   n_type = length(vaccine)
   plot_result = NULL

@@ -16,8 +16,9 @@ Encoding: UTF-8
 Suggests: rmarkdown, knitr
 VignetteBuilder: utils, knitr
 RoxygenNote: 7.2.1
-Imports: Rcpp (>= 0.11.0), RcppArmadillo, tidyverse
+Imports: Rcpp (>= 0.11.0), RcppArmadillo, tidyverse, ggplot2
 LinkingTo: Rcpp, RcppArmadillo
+Depends: R (>= 3.5.0)
 Collate: 
     'CoxReg.R'
     'RcppExports.R'

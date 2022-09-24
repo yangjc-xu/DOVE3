@@ -1,8 +1,8 @@
-#include <iostream>
-#include <armadillo>
+#define ARMA_DONT_PRINT_ERRORS
 #include <RcppArmadillo.h>
-using namespace Rcpp;
+
 // [[Rcpp::depends(RcppArmadillo)]]
+using namespace Rcpp;
 
 // [[Rcpp::export]]
 arma::field<arma::vec> computeList(arma::field<arma::vec> object, arma::field<arma::vec> add, arma::vec index) {
