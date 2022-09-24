@@ -18,29 +18,146 @@ on.exit(options(opt))
 
 ## Introduction
 
-\textbf{DOVE3} implements the methodology of Lin et al. (2022) for estimating time-varying association of 
-primary and booster COVID-19 vaccination and prior SARS-CoV-2 infection with subsequent SARS-CoV-2 infection, 
-representing the log rate ratio for the vaccine effect or by a piece-wise linear function of time since 
-vaccination or infection.
+\textbf{DOVE3} is an R package for estimating the potentially waning long-term effectiveness 
+of vaccination and prior infection against COVID-19 outcomes in observational studies (Lin et al., 2022). 
+Effects of all exposures (i.e., vaccination and prior infection) are estimated simultaneously under 
+a single Cox regression model, allowing the outcome of interest to be a recurrent event.
 
 \textbf{DOVE3} inputs a rectangular data set with the following information:
 
 \begin{itemize}
-\item \textbf{Entry time}: The time when the participant enters the trial. 
+\item \textbf{Subject ID}: Number that identifies subjects.
+
+\item \textbf{Entry time}: Calendar time when the subject enters the risk set.
+
+\item \textbf{Event Time}: Calendar time when the subject experiences the clinical outcome of interest (e.g., SARS-CoV-2 Infection, hospitalization, or death caused by infection).
+
+\item \textbf{Censoring Time}: Calendar time when the subject moves out of the risk set.
+
+\item \textbf{Vaccination Time}: Calendar time when vaccination takes place.
   
-\item \textbf{Vaccination time}: The time when vaccination takes place.
+\item \textbf{Vaccination Type}: Categorical variable indicating which vaccine type the subject receives.
+
+\item \textbf{Infection Time}: Calendar time when the subject is infected.
+
+\item \textbf{Infection Type}: Categorical variable indicating which dominant variant the infection is associated with.
   
 \item \textbf{Covariates}: Baseline covariates (e.g., priority group, age, gender).
 \end{itemize}
 
 \noindent Of note, an arbitrary number of baseline covariates can be included,
-and all of the time variables are measured from the start of the trial and are 
+and all of the time variables are measured from the start of the study and are 
 specified in units of whole days. 
 
 \vspace{.15in}
 
 The primary analysis tool of the package is \textit{dove3()}, which
-returns the estimated rate ratio for each baseline covariate and
-the estimated VE in reducing the hazard rate (instantaneous risk).
+returns the estimated hazard/rate ratio for each baseline covariate and
+the estimated effectiveness in reducing the instantaneous risk.
 The standard errors and 95\% confidence intervals are also provided.
 
+\vspace{.15in}
+
+In addition, the package includes three convenience functions:
+\textit{outcome()}, which is used to specify the subject id, entry time, event time, and censoring time 
+in the model statement of \textit{dove3()}; and \textit{exposure()}, which is used to specify the 
+vaccination time, vaccine type, infection time, and infection type in the model statement of \textit{dove3()}.
+
+## Functions
+
+### \textit{outcome()}
+
+This convenience function is used as the left-hand side of a formula object 
+for the sole purpose of simplifying the specification of required input variables:
+subject id, entry time, event time, and censoring time.
+This function is not intended to be used as a stand-alone feature.
+For completeness, the function ensures
+that the input data obey basic constraints and returns 
+the data in a predictable format for use in internal functions.
+
+\vspace{.15in}
+
+The usage is
+```{r eval=FALSE}
+outcome(subject.id, entry.time, event.time, censor.time)
+```
+where \texttt{subject.id} is the number that identifies subjects;
+\texttt{entry.time} is the calendar time when the subject enters the risk set;
+\texttt{event.time} is the calendar time when the subject experiences the clinical outcome of interest
+(NA, Inf, or an arbitrary value greater than the censoring time if the subject does not experience an event);
+\texttt{censor.time} is the calendar time when the subject moves out of the risk set. 
+Note that all times must be provided in units of whole days.
+
+\subsection{\textit{exposure()}}
+
+This convenience function is used as the right-hand side of a formula object 
+for the sole purpose of simplifying the specification of required input variables:
+vaccination time, vaccine type, infection time, and infection type.
+This function is not intended to be used as a stand-alone feature.
+For completeness, the function ensures
+that the input data obey basic constraints and returns 
+the data in a predictable format for use in internal functions.
+
+\vspace{.15in}
+
+The usage is
+```{r eval=FALSE}
+exposure(vaccine.time, vaccine.type, infection.time, infection.type)
+```
+where \texttt{vaccine.time} is the calendar time when vaccination takes place 
+(NA, Inf, or an arbitrary value greater than the study end time if the subject is not vaccinated during the study period);
+\texttt{vaccine.type} is the categorical variable indicating which vaccine type the subject receives 
+(an integer between 1 and the total number of vaccine types, with NA or an arbitrary value within this 
+range if the subject is not vaccinated during the study period);
+\texttt{infection.time} is the calendar time when the subject is infected
+(NA, Inf, or an arbitrary value that is larger than the study end time if the subject is not infected during the study period);
+\texttt{infection.type} is the categorical variable indicating which dominant variant the infection is associated with 
+(an integer between 1 and the total number of variants under investigation, with NA or an arbitrary value within this range if the subject is not infected during the study period).
+Note that all times must be provided in units of whole days.
+
+\subsection{\textit{dove3()}}
+
+This function estimates effectiveness of vaccination and prior infection
+under the assumption that the log rate/hazard ratio for 
+the effect of vaccine and prior infection is a piecewise linear function of time. The value object 
+returned contains the estimated hazard/rate ratio for each baseline covariate and the 
+estimated effectiveness of vaccine and prior infection in reducing the 
+hazard rate, $EE_h(t)$, where $t$ is the
+time elapsed since vaccination or infection.
+The 95\% confidence intervals for the estimated effectiveness are provided.
+
+\vspace{.15in}
+
+The function call takes the following form:
+
+```{r eval=FALSE}
+dove3(formula,
+      data,
+      vaccine_infection_interaction = FALSE,
+      vaccine_knots = NULL,
+      vaccine_uninfected_knots = NULL,
+      vaccine_infected_knots = NULL,
+      prior_infection_knots = NULL,
+      related_vaccine_types = NULL,
+      last_piece_constant = FALSE,
+      reinfection_cutoff = 14,
+      plots = TRUE
+)
+```
+where
+\begin{itemize}
+\item \texttt{formula} is a model statement. See below for further details. 
+\item \texttt{data} is a data.frame object containing all required data
+as previously described.
+\item \texttt{vaccine\_infection\_interaction} is a logical object specifying the interaction between vaccination and prior infection. If TRUE, vaccine effects are allowed to be different between previously uninfected subjects and previously infected subjects; otherwise, average vaccine effects among all subjects are estimated, regardless of the prior infection status.
+\item \texttt{vaccine\_knots} is a list object of which the $k$th element specifies the knots of the piecewise linear function for the log rate/hazard ratio of the
+$k$th vaccine type.
+\item \texttt{vaccine\_uninfected\_knots} is a list object of which the $k$th element specifies the knots of the piecewise linear function for the log rate/hazard ratio of the $k$th vaccine type given no prior infection before vaccination.
+\item \texttt{vaccine\_infected\_knots} is a list object of which the $k$th element specifies the knots of the piecewise linear function for the log rate/hazard ratio of the $k$th vaccine type given at least one prior infection before vaccination.
+\item \texttt{prior\_infection\_knots} is a list object of which the $k$th element specifies the knots of the piecewise linear function for the log rate/hazard ratio of the $k$th infection type. The first knot should be placed at reinfection\_cutoff.
+\item \texttt{related\_vaccine\_types} is a list object of which the element takes the form c(i,j) and imposes a constraint that the slope of the first piece of the piecewise linear function is the same between the $i$th and $j$th vaccine types.
+\item \texttt{last\_piece\_constant} is a logical object specifying the effectiveness trend after the last change point. If TRUE, effectiveness is assumed to be constant after the last change point; otherwise, effectiveness is allowed to vary after the last change point.
+\item \texttt{plots} is a logical object indicating whether graphical forms of the estimated effectiveness curves are to be generated.
+\end{itemize}
+
+\vspace{.15in}
