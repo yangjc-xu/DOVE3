@@ -1,3 +1,4 @@
+#' @import stats
 processOutput = function(result, coef_name, cutoff, infection_ind, plots){
   time = result$time
   vh = result$vh
