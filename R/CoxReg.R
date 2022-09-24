@@ -1,4 +1,5 @@
 #' @useDynLib DOVE3
+#' @import stats
 CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
                   constantVE = FALSE, interact = FALSE, cutoff = 14, plots = TRUE){
   ## data: subject.id, event.time, censor.time, entry.time, Vtime, Vtype, infection.time, infection.type, X
