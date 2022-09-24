@@ -202,7 +202,7 @@ prior.infection.knots = list("inf.type1" = c(14, 120),
                              "inf.type2" = c(14,120))
 
 # Fit the simple model without interaction or related vaccine types
-dove3(formula = outcome(subject.id, entry.time, event.time, censor.time) ~
+fit1 <- dove3(formula = outcome(subject.id, entry.time, event.time, censor.time) ~
                 age + gender + priority +
                 exposure(Vtime, Vtype, infection.time, infection.type),
       data = exampleData,
@@ -219,8 +219,8 @@ vaccine.infected.knots = list("vac.noinf.type1" = c(30),
                                 "vac.noinf.type3" = c(60))
 
 # Fit the model with interaction between vaccination and prior infection status,
-and impose a constraint on the first pieces of the first two vaccine types.
-dove3(formula = outcome(subject.id, entry.time, event.time, censor.time) ~
+# and impose a constraint on the first pieces of the first two vaccine types.
+fit2 <- dove3(formula = outcome(subject.id, entry.time, event.time, censor.time) ~
                 age + gender + priority +
                 exposure(Vtime, Vtype, infection.time, infection.type),
       data = exampleData,
