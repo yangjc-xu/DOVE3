@@ -3,7 +3,7 @@
 #' Estimates the potentially waning long-term effectiveness of vaccination and
 #'  prior infection against COVID-19 outcomes in observational studies.
 #'  Effects of all exposures (i.e., vaccination and prior infection) are estimated
-#'  simutaneously under a single Cox regression model, allowing the outcome
+#'  simultaneously under a single Cox regression model, allowing the outcome
 #'  of interest to be a recurrent event.
 #'
 #' The log intensity or hazard ratio for an exposure is a piecewise
