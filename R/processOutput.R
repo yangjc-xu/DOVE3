@@ -1,4 +1,3 @@
-#' @export
 processOutput = function(result, coef_name, cutoff, infection_ind, plots){
   time = result$time
   vh = result$vh
@@ -46,7 +45,7 @@ processOutput = function(result, coef_name, cutoff, infection_ind, plots){
 
   output = NULL
   output[["covariates"]] = covariates
-  output[["vaccine"]] = VE
+  output[["effectiveness"]] = VE
   output[["plots"]] = plot_res
   return(output)
 }
