@@ -1,6 +1,6 @@
 Package: DOVE3
 Title: Durability of Vaccine Efficacy 3
-Version: 0.0.0.9000
+Version: 1.0
 Authors@R: c(person("Danyu", "Lin", role = "aut"),
              person("Yu", "Gu", role = "aut"),
              person("Yangjianchen", "Xu", role = c("aut", "cre"),
