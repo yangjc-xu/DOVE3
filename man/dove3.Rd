@@ -98,12 +98,15 @@ An list object with elements
     confidence interval, and the two-sided p-value for testing no covariate
     effect.}
 
-  \item{effectiveness}{A list of matrices, one for each type of exposure.
+  \item{effectiveness}{A list of matrices, one for each type of exposure 
+    (vaccination comes first and prior infection next, both in order of type).
     Each matrix contains the daily effectiveness estimates in reducing the rate
     or hazard of the clinical outcome of interest, together with the
     standard errors and the 95\% confidence intervals.}
 
-  \item{plots}{A list of plot objects returned by ggplot().}
+  \item{plots}{A list of plot objects returned by ggplot(), one for each type 
+    of exposure (vaccination comes first and prior infection next, 
+    both in order of type).}
 }
 \description{
 Estimates the potentially waning long-term effectiveness of vaccination and
@@ -152,7 +155,6 @@ The event_time is the time of the clinical outcome of interest caused by the
 infection in the same row, with NA, Inf, or an
 arbitrary value greater than the censor_time if that infection does not cause
 the outcome.
-Rows from the same subject are sorted by the infection_time.
 If a subject never experiences the clinical outcome of interest during the
 entire study period, this subject will have only one record, with the event_time
 being NA, Inf, or an arbitrary value greater than the censor_time, and with the
