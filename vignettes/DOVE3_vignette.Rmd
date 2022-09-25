@@ -45,15 +45,15 @@ a single Cox regression model, allowing the outcome of interest to be a recurren
 \item \textbf{Covariates}: Baseline covariates (e.g., priority group, age, gender).
 \end{itemize}
 
-\noindent Of note, an arbitrary number of baseline covariates can be included,
-and all of the time variables are measured from the start of the study and are 
+\noindent Of note, both numerical and categorical covariates can be included,
+and all of the time variables are measured from the same time origin and are 
 specified in units of whole days. 
 
 \vspace{.15in}
 
 The primary analysis tool of the package is \textit{dove3()}, which
 returns the estimated hazard/rate ratio for each baseline covariate and
-the estimated effectiveness in reducing the instantaneous risk.
+the estimated effectiveness of each exposure in reducing the instantaneous risk of the clinical outcome of interest.
 The standard errors and 95\% confidence intervals are also provided.
 
 \vspace{.15in}
@@ -161,7 +161,7 @@ $k$th vaccine type.
 \item \texttt{plots} is a logical object indicating whether graphical forms of the estimated effectiveness curves are to be generated.
 \end{itemize}
 
-If vaccine\_knots, vaccine\_uninfected\_knots, or vaccine\_infected\_knots = NULL, knots will be placed at every other month by default. The input of vaccine\_knots will be ignored when vaccine\_infection\_interaction = TRUE. The input of vaccine\_uninfected\_knots and vaccine\_infected\_knots will be ignored if vaccine\_infection\_interaction = FALSE. If prior\_infection\_knots = NULL, a default set of knots will be used, with the first knot placed at reinfection\_cutoff and the subsequent knots placed at every three months.
+If vaccine\_knots or vaccine\_uninfected\_knots = NULL, knots will be placed at every month by default. If vaccine\_infected\_knots = NULL, knots will be placed at every other month by default. The input of vaccine\_knots will be ignored when vaccine\_infection\_interaction = TRUE. The input of vaccine\_uninfected\_knots and vaccine\_infected\_knots will be ignored if vaccine\_infection\_interaction = FALSE. If prior\_infection\_knots = NULL, a default set of knots will be used, with the first knot placed at reinfection\_cutoff and the subsequent knots placed at every three months.
 
 \vspace{.15in}
 
