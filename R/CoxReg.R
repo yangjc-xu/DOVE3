@@ -45,6 +45,7 @@ CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
       V = computeList(V_vac, as.list(data_unique$infection.type + infection_ind - 1), (1:n)-1)
     } else{
       subid_i = which(m == i)
+      if(length(subid_i) == 0) { next }
       loc = which(data$subject.id%in%subid_i)
       loc = loc[seq(i,length(loc),i)]
       time_i = data$infection.time[loc]
@@ -66,6 +67,7 @@ CoxReg = function(data, knots, ResMat, eps = 1e-4, MaxIter = 15,
     dimension = dimension - 1
   }
   dimension[infection_ind:length(dimension)] = dimension[infection_ind:length(dimension)] + 1
+  cat("Dimension = ", dimension, "\n")
 
   result = Cox_general(Time, t, Delta, C, V,
                        S, X, m, VacTime, FirstInfTime,

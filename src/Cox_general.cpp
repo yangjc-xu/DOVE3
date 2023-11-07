@@ -1,4 +1,4 @@
-#define ARMA_DONT_PRINT_ERRORS
+#define ARMA_WARN_LEVEL
 #include <RcppArmadillo.h>
 
 // [[Rcpp::depends(RcppArmadillo)]]
@@ -60,7 +60,7 @@ arma::rowvec BS_infection(double t, arma::vec knots, bool constantVE){
 
   if (constantVE) {
     npc = knots.n_elem + 1;
-    temp = t>knots(npc-1) ? t-knots(npc-1) : 0;
+    temp = t>knots(npc-2) ? t-knots(npc-2) : 0;
   } else {
     npc = knots.n_elem + 2;
     temp = 0;
@@ -91,9 +91,9 @@ arma::rowvec BS2(double Time, arma::vec V, arma::vec S, double FirstInf,
       int end = loc(V(j)-1)-1;
       arma::vec knots_j = knots(V(j)-1);
       if(V(j) < interact_ind){
-        if(Time > S(j) & S(j) <= FirstInf){ B.subvec(start, end) = BS(Time - S(j), knots_j, constantVE);}
-      } else if(V(j) >= interact_ind & V(j) < infection_ind){
-        if(Time > S(j) & S(j) > FirstInf){ B.subvec(start, end) = BS(Time - S(j), knots_j, constantVE);}
+        if((Time > S(j)) && (S(j) <= FirstInf)){ B.subvec(start, end) = BS(Time - S(j), knots_j, constantVE);}
+      } else if((V(j) >= interact_ind) && (V(j) < infection_ind)){
+        if((Time > S(j)) && (S(j) > FirstInf)){ B.subvec(start, end) = BS(Time - S(j), knots_j, constantVE);}
       } else{
         if(Time > S(j)){ B.subvec(start, end) += BS_infection(Time - S(j), knots_j, constantVE);}
       }
@@ -144,7 +144,7 @@ struct CoxPHInformation get_Info(arma::vec beta, arma::vec gamma, arma::vec d,
     // compute log-likelihood, score and information matrix
     arma::uvec index = arma::find(C >= tk);
     // This j loop is for subjects. The index.n_elem is several millions.
-    for(int j = 0; j < index.n_elem; ++j){
+    for(arma::uword j = 0; j < index.n_elem; ++j){
       arma::vec V_index_j = V(index(j));
       arma::vec S_index_j = S(index(j));
       double FirstInf_index_j = FirstInfTime(index(j));
@@ -154,8 +154,8 @@ struct CoxPHInformation get_Info(arma::vec beta, arma::vec gamma, arma::vec d,
       // remove subjects who get infections with *cutoff* days out of risk set
       arma::uvec index_inf = arma::find(V_index_j >= infection_ind);
       if(index_inf.n_elem > 0){
-        for(int q = 0; q < index_inf.n_elem; ++q){
-          if((tk - S_index_j(index_inf(q))) <= cutoff & (tk - S_index_j(index_inf(q))) > 0){
+        for(arma::uword q = 0; q < index_inf.n_elem; ++q){
+          if(((tk - S_index_j(index_inf(q))) <= cutoff) && ((tk - S_index_j(index_inf(q))) > 0)){
             temp = 0;
           }
         }
@@ -206,6 +206,7 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
   arma::vec time(tau + 1); time.zeros();
   int p1 = X.n_cols;
   int p2 = arma::sum(dimension);
+  std::cout << "dimension = " << dimension.t() << std::endl;
   int n = X.n_rows;
   int n_all = arma::sum(m);
   arma::mat Z(n_all,p2); Z.zeros();
@@ -222,6 +223,8 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
   int Iter = 0;
   double error = 1;
 
+  std::cout << "PASS1" << std::endl;
+
   // compute d
   arma::uvec index_event = arma::find(Delta > 0);
   arma::vec Time_event = Time(index_event);
@@ -230,11 +233,14 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
     d(k) = index_tk.n_elem;
   }
 
+  std::cout << "PASS2" << std::endl;
+
   // compute m_sum
   for(int i = 0; i < n; ++i){
     double start = (i == 0) ? 0 : m_sum(i-1);
     m_sum(i) = start + m(i);
   }
+  std::cout << "PASS3" << std::endl;
 
   // compute Z_i(T_ij)
   for(int i = 0; i < n; ++i){
@@ -249,6 +255,8 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
     }
   }
 
+  std::cout << "PASS4" << std::endl;
+
   // compute Score_constant
   for(int i = 0; i < n; ++i){
     int start_i = (i == 0) ? 0 : m_sum(i-1);
@@ -259,12 +267,15 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
       }
     }
   }
+  std::cout << "PASS5" << std::endl;
 
   temp_old = get_Info(theta_old.head(p1), theta_old.tail(p2), d,
                       Time, t, Delta, C, V, S, X, m,
                       VacTime, FirstInfTime, dimension, infection_ind, interact_ind,
                       Z, Score_constant, knots, constantVE, interact, cutoff);
-  while(error > eps && Iter < MaxIter){
+
+  std::cout << "PASS6" << std::endl;
+  while((error > eps) && (Iter < MaxIter)){
     theta = theta_old + ResMat.t() * arma::solve(ResMat * temp_old.InformationMat * ResMat.t(), ResMat * temp_old.ScoreFun);
     std::cout << "beta = " << theta.head(p1).t() << std::endl;
     std::cout << "gamma = " << theta.tail(p2).t() << std::endl;
@@ -279,11 +290,12 @@ Rcpp::List Cox_general(arma::vec Time, arma::vec t, arma::vec Delta, arma::vec C
     std::cout << "Iteration = " << Iter << ", Difference = " << error << "\n" << std::endl;
   }
 
+  std::cout << "PASS7" << std::endl;
   beta = theta.head(p1);
   gamma = theta.tail(p2);
-  arma::mat cov = ResMat.t() * arma::inv(ResMat * temp_new.InformationMat * ResMat.t()) * ResMat;
+  arma::mat cov = ResMat.t() * arma::solve(ResMat * temp_new.InformationMat * ResMat.t(), ResMat);
   arma::mat cov_gamma = cov.submat(p1,p1,p1+p2-1,p1+p2-1);
-
+  std::cout << "PASS8" << std::endl;
   for(int k = 0; k < n_type; ++k){
     arma::vec knots_k = knots(k);
     int start_k = (k == 0) ? 0 : arma::sum(dimension.subvec(0,k-1));

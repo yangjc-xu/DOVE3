@@ -98,14 +98,14 @@ An list object with elements
     confidence interval, and the two-sided p-value for testing no covariate
     effect.}
 
-  \item{effectiveness}{A list of matrices, one for each type of exposure 
+  \item{effectiveness}{A list of matrices, one for each type of exposure
     (vaccination comes first and prior infection next, both in order of type).
     Each matrix contains the daily effectiveness estimates in reducing the rate
     or hazard of the clinical outcome of interest, together with the
     standard errors and the 95\% confidence intervals.}
 
-  \item{plots}{A list of plot objects returned by ggplot(), one for each type 
-    of exposure (vaccination comes first and prior infection next, 
+  \item{plots}{A list of plot objects returned by ggplot(), one for each type
+    of exposure (vaccination comes first and prior infection next,
     both in order of type).}
 }
 \description{

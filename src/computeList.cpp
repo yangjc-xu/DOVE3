@@ -1,4 +1,4 @@
-#define ARMA_DONT_PRINT_ERRORS
+#define ARMA_WARN_LEVEL
 #include <RcppArmadillo.h>
 
 // [[Rcpp::depends(RcppArmadillo)]]

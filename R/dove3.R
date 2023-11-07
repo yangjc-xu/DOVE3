@@ -165,14 +165,14 @@
 #'     confidence interval, and the two-sided p-value for testing no covariate
 #'     effect.}
 #'
-#'   \item{effectiveness}{A list of matrices, one for each type of exposure 
+#'   \item{effectiveness}{A list of matrices, one for each type of exposure
 #'     (vaccination comes first and prior infection next, both in order of type).
 #'     Each matrix contains the daily effectiveness estimates in reducing the rate
 #'     or hazard of the clinical outcome of interest, together with the
 #'     standard errors and the 95\% confidence intervals.}
 #'
-#'   \item{plots}{A list of plot objects returned by ggplot(), one for each type 
-#'     of exposure (vaccination comes first and prior infection next, 
+#'   \item{plots}{A list of plot objects returned by ggplot(), one for each type
+#'     of exposure (vaccination comes first and prior infection next,
 #'     both in order of type).}
 #'
 #' @references Lin D, Gu Y, Xu Y, et al. Association of Primary and Booster
@@ -406,13 +406,13 @@ dove3 <- function(formula,
   # number of parameters
   dbeta = ncol(X)
   if(!vaccine_infection_interaction) {
-    dgamma1 = lengths(vaccine_knots)+1-last_piece_constant
-    dgamma2 = lengths(prior_infection_knots)+2-last_piece_constant
+    dgamma1 = lengths(vaccine_knots)+1-last_piece_constant*1
+    dgamma2 = lengths(prior_infection_knots)+2-last_piece_constant*1
     d = c(dbeta, dgamma1, dgamma2)
   } else {
-    dgamma1 = lengths(vaccine_uninfected_knots)+1-last_piece_constant
-    dgamma2 = lengths(vaccine_infected_knots)+1-last_piece_constant
-    dgamma3 = lengths(prior_infection_knots)+2-last_piece_constant
+    dgamma1 = lengths(vaccine_uninfected_knots)+1-last_piece_constant*1
+    dgamma2 = lengths(vaccine_infected_knots)+1-last_piece_constant*1
+    dgamma3 = lengths(prior_infection_knots)+2-last_piece_constant*1
     d = c(dbeta, dgamma1, dgamma2, dgamma3)
     temp = lapply(related_vaccine_types,
                   function(x) x+length(dgamma1))
@@ -422,6 +422,7 @@ dove3 <- function(formula,
 
   # generate restriction matrix
   ResMat = diag(sum(d))
+  cat("sum(d) = ", sum(d), "\n")
 
   if(length(related_vaccine_types)>0) {
 
